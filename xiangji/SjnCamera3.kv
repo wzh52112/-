@@ -1,0 +1,91 @@
+<CameraScreen>:
+    # 拍摄界面类
+    BoxLayout:
+        orientation: 'vertical'
+        Camera:  # 取景预览使用了kivy的camera控件，这个其实不太好，虽然可以运行，但是算是一个小bug，和后面拍摄照片用的opencv会发生冲突，
+                #拍摄照片完成后预览画面会卡住，我是想统一用opencv但是暂时没有成功实现。
+            id: sjnCamera
+            play: True
+            index: 0  # 摄像头编号
+            width:'60dp'
+            height:'80dp'
+        BoxLayout:
+            # 切换摄像头模块
+            orientation:'horizontal'
+            size_hint:1,.1
+            Button:
+                text:'camera0'
+                background_color: 1,1,0,1
+                on_press: root.selectCamera(0)  # 绑定按钮的响应函数：本类的selectCamera（）函数
+            Button:
+                text:'camera1'
+                background_color: 1,1,0,1
+                on_press: root.selectCamera(1)
+            Button:
+                text:'camera2'
+                background_color: 1,1,0,1
+                on_press: root.selectCamera(2)
+            Button:
+                text:'camera3'
+                background_color: 1,1,0,1
+                on_press: root.selectCamera(3)
+        BoxLayout:
+            orientation:'horizontal'
+            size_hint:1,.1
+            Button:
+                text:'1 stop'
+                background_color: 1,1,0,1
+                on_press: root.selectCompensation(1)
+            Button:
+                text:'2 stop'
+                background_color: 1,1,0,1
+                on_press: root.selectCompensation(2)
+            Button:
+                text:'3 stop'
+                background_color: 1,1,0,1
+                on_press: root.selectCompensation(3)
+        BoxLayout:
+            # 其他功能模块
+            orientation:'horizontal'
+            size_hint_y: None
+            height: '48dp'
+            Button:
+                # 相册入口
+                text: 'Display'
+                on_press: root.manager.current = 'photo_screen'  # 将屏幕切换为PhotoScreen，
+                                                    #'photo_screen'是sjnCamera3App类中设置的PhotoScreen名称
+            Button:
+                # 拍摄按钮
+                text: 'Shoot'
+                on_press: root.takePicture()  # 本类的takePicture（）函数
+            Button:
+                text: 'createCamera'
+                #on_press: root.createCamera()  # 这个是搭配切换摄像头用的，目前暂时没有完成实现，所以没有开放
+<PhotoScreen>:
+    # PhotoScreen类，相册界面
+    display_HDR_image:"HDR/fusion_175225.png"  # 全局变量，用来更新显示的画面。
+    BoxLayout:
+        orientation: 'vertical'
+        Image:
+            # 图片控件
+            id:HDR_display
+            source:root.display_HDR_image  # 上面提到的全局变量，用来赋值给source。只要更改这个变量再刷新就能实现切换图片的效果。
+            size_hint:1,.9
+        BoxLayout:
+            orientation:'horizontal'
+            size_hint:1,.1
+            Button:
+                # 上一张
+                text: 'left'
+                on_press: root.left()  # 绑定响应函数：本类的left
+            Button:
+                # 下一张
+                text: 'right'
+                on_press: root.right()
+            Button:
+                # 切换回拍摄界面的按钮
+                text: 'Back'
+                on_press:
+                    # 可以绑定多个按钮响应事件，格式如此。
+                    root.exit_display()  # 切回拍摄界面时调用本类exit_display把索引调回0
+                    root.manager.current = 'camera_screen'  # 切换显示屏幕到拍摄界面
